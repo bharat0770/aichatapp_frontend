@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import MainScreen from './MainScreen';
 import SideScreen from './SideScreen';
 import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 
 const HomeScreen = () => {
@@ -13,29 +14,31 @@ const HomeScreen = () => {
     const [isOpen, setIsOpen] = useState(true);
     const [prompt, setPrompt] = useState("");
     const [aiTyping, setAiTyping] = useState(false);
-    const [user, setUser] = useState(null); 
-    
+    const [user, setUser] = useState(null);
+
     const navigate = useNavigate();
     useEffect(() => {
+
         const user = JSON.parse(localStorage.getItem("user"));
         if (!user) {
             navigate("/login");
         }
-        setUser(user); 
+        setUser(user);
     }, [navigate]);
 
 
     const fetchChat = async () => {
-        if(!conversationId)return; 
-        let response = await axios.get(`http://localhost:3000/api/v1/message/all?conversationId=${conversationId}`);
+        if (!conversationId) return;
+
+        let response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/v1/message/all?conversationId=${conversationId}`);
         console.log(response);
         setChat(response.data.data);
 
     }
     const fetchConversation = async () => {
-        if(!user)return; 
-        let response = await axios.get(`http://localhost:3000/api/v1/conversation/all?email=${user.email}`);
-        console.log("conversation list ",response);
+        if (!user) return;
+        let response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/v1/conversation/all?email=${user.email}`);
+        console.log("conversation list ", response);
         setAllConversation(response.data.data);
 
     }
@@ -50,12 +53,13 @@ const HomeScreen = () => {
 
     const createNewConversation = async () => {
         try {
-            const response = await axios.post("http://localhost:3000/api/v1/conversation/create", {
+            const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/v1/conversation/create`, {
                 userId: user.userId,
                 title: "new conversation"
             })
-
+            setAllConversation((prev) => [...prev, response.data.data])
             setConversationId(response.data.data._id);
+            
         } catch (error) {
             console.log("error while creating converstion ", error.message);
         }
@@ -70,16 +74,24 @@ const HomeScreen = () => {
             }])
             setPrompt("");
             setAiTyping(true)
-            const response = await axios.post(`http://localhost:3000/api/v1/message/create`, {
+
+            const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/v1/message/create`, {
                 email: "abc@gmail.com",
                 conversationId: conversationId,
                 userInput: prompt
             });
+
             setAiTyping(false)
             console.log(response.data);
             setChat((prev) => [...prev, response.data.data[1]])
         } catch (error) {
-            console.log("error in sending prompt ", error.message);
+            const backendMessage =
+                error.response?.data?.data ||
+                error.response?.data?.message ||
+                "Something went wrong";
+
+            toast.error(backendMessage);
+            setAiTyping(false)
         }
     }
     // if(!user){
@@ -89,10 +101,10 @@ const HomeScreen = () => {
     // }
     return (
         <>
-            <div className='container '>
-                <div className='h-screen w-screen flex overflow-hidden relative'>
 
-                    {/* <div className={`side-screen bg-gray-800 transition-all  ${isOpen ? "w-[20%]" : "w-[3%]"}  duration-100 ease-in h-screen`}>
+            <div className='h-screen overflow-hidden bg-gray-900 w-screen flex relative'>
+
+                {/* <div className={`side-screen bg-gray-800 transition-all  ${isOpen ? "w-[20%]" : "w-[3%]"}  duration-100 ease-in h-screen`}>
 
             <div className={`flex items-center ${isOpen ? "px-2 justify-end" : "justify-center"}`} >
               <button onClick={() => setIsOpen(!isOpen)} className='py-2 px-4 rounded-lg bg-gray-600/50 text-white'>S</button>
@@ -109,35 +121,36 @@ const HomeScreen = () => {
               })
             }
           </div> */}
-                    <SideScreen
-                        user = {user}
-                        setConversationId={setConversationId}
-                        createNewConversation={createNewConversation}
-                        isOpen={isOpen}
-                        allConversation={allConversation}
+                <SideScreen
+                    user={user}
+                    setConversationId={setConversationId}
+                    createNewConversation={createNewConversation}
+                    isOpen={isOpen}
+                    allConversation={allConversation}
+                    conversationId={conversationId}
+                    setIsOpen={setIsOpen}
+                    setUser={user}
+                    navigate={navigate}
+                />
+
+                {
+
+                    <MainScreen
+                        user={user}
+                        setPrompt={setPrompt}
+                        prompt={prompt}
                         conversationId={conversationId}
-                        setIsOpen={setIsOpen}
-                        setUser ={user}
-                        navigate={navigate}
+                        chat={chat}
+                        sendPrompt={sendPrompt}
+                        aiTyping={aiTyping}
+                        isOpen={isOpen}
+                    // chat={chat}
                     />
-                    {
-
-                        <MainScreen
-                        user = {user}
-                            setPrompt={setPrompt}
-                            prompt={prompt}
-                            conversationId={conversationId}
-                            chat={chat}
-                            sendPrompt={sendPrompt}
-                            aiTyping={aiTyping}
-                            isOpen={isOpen}
-                        // chat={chat}
-                        />
-                    }
-
-                </div>
+                }
 
             </div>
+
+
         </>
     )
 }

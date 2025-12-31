@@ -1,17 +1,19 @@
 import axios from "axios";
 import { use, useEffect, useState } from "react"
+import { useNavigate } from "react-router-dom";
 
 const RegisterScreen = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const  navigate = useNavigate(); 
     const register = async () => {
         try {
-            const response = await axios.post("http://localhost:3000/api/v1/user/register", {
+            const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/v1/user/register`, {
                 email: email,
                 password: password
             });
             console.log("register res ", response.data.data); 
-            navigate()
+            navigate("/login"); 
         } catch (error) {
             console.log("error in register", error.message);
         }
