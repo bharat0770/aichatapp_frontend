@@ -31,14 +31,12 @@ const HomeScreen = () => {
         if (!conversationId) return;
 
         let response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/v1/message/all?conversationId=${conversationId}`);
-        console.log(response);
         setChat(response.data.data);
 
     }
     const fetchConversation = async () => {
         if (!user) return;
         let response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/v1/conversation/all?email=${user.email}`);
-        console.log("conversation list ", response);
         setAllConversation(response.data.data);
 
     }
@@ -82,7 +80,6 @@ const HomeScreen = () => {
             });
 
             setAiTyping(false)
-            console.log(response.data);
             setChat((prev) => [...prev, response.data.data[1]])
         } catch (error) {
             const backendMessage =
