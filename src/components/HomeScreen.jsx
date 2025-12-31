@@ -59,7 +59,7 @@ const HomeScreen = () => {
             })
             setAllConversation((prev) => [...prev, response.data.data])
             setConversationId(response.data.data._id);
-            
+
         } catch (error) {
             console.log("error while creating converstion ", error.message);
         }
@@ -94,33 +94,10 @@ const HomeScreen = () => {
             setAiTyping(false)
         }
     }
-    // if(!user){
-    //   return <div>
-    //     login first
-    //   </div>
-    // }
     return (
         <>
 
             <div className='h-screen overflow-hidden bg-gray-900 w-screen flex relative'>
-
-                {/* <div className={`side-screen bg-gray-800 transition-all  ${isOpen ? "w-[20%]" : "w-[3%]"}  duration-100 ease-in h-screen`}>
-
-            <div className={`flex items-center ${isOpen ? "px-2 justify-end" : "justify-center"}`} >
-              <button onClick={() => setIsOpen(!isOpen)} className='py-2 px-4 rounded-lg bg-gray-600/50 text-white'>S</button>
-            </div>
-
-            <div className={`${isOpen ? "visible" : "hidden"} bg-gray-900/50 hover:bg-gray-700 cursor-pointer text-white p-5 m-1 rounded-lg`} onClick={createNewConversation}>
-              new chat
-            </div>
-            {
-              isOpen && allConversation?.map((i) => {
-                return <div className={`${conversationId == i._id ? "bg-gray-700/30" : ""} hover:bg-gray-900/50 p-4 m-0.5 text-white rounded-lg `} onClick={() => setConversationId(i._id)}>
-                  {i.title}
-                </div>
-              })
-            }
-          </div> */}
                 <SideScreen
                     user={user}
                     setConversationId={setConversationId}
@@ -144,7 +121,6 @@ const HomeScreen = () => {
                         sendPrompt={sendPrompt}
                         aiTyping={aiTyping}
                         isOpen={isOpen}
-                    // chat={chat}
                     />
                 }
 
