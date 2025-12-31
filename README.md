@@ -1,4 +1,10 @@
 
+> **Note**  
+> The backend is maintained in a **separate repository** to enable independent deployment pipelines, cleaner architecture, and improved maintainability.
+
+**Backend Repository:**  
+🔗 https://github.com/bharat0770/aichatapp_backend
+
 ## How to Run Locally
 
 ### Frontend
